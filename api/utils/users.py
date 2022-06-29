@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from fastapi import status, HTTPException
 from api.services import auhontication
-from db.models.user import User, Profile
+from db.models.user import User, Profile, Friends
 from pydantic_schemas.profile import ProfileCreate
 from pydantic_schemas.user import UserInDB
 
@@ -67,7 +67,7 @@ async def create_user(db: AsyncSession, user: UserInDB):
 
 
 async def get_update_user(
-    db: AsyncSession, user_id: int, update_info: dict[str, str]
+        db: AsyncSession, user_id: int, update_info: dict[str, str]
 ):
     query = (
         update(User).where(User.id == user_id).values(update_info)
@@ -77,7 +77,7 @@ async def get_update_user(
 
 
 async def get_update_profile(
-    db: AsyncSession, user_id: int, update_info: dict[str, str]
+        db: AsyncSession, user_id: int, update_info: dict[str, str]
 ):
     query = (
         update(Profile).where(Profile.user_id == user_id).values(update_info)
@@ -87,7 +87,7 @@ async def get_update_profile(
 
 
 async def create_profile(
-    db: AsyncSession, profile: ProfileCreate, user_id: int
+        db: AsyncSession, profile: ProfileCreate, user_id: int
 ):
     db_profile = Profile(
         first_name=profile.first_name,
@@ -111,3 +111,21 @@ async def user_is_admin(current_user: User):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You are not authorized person",
         )
+
+
+async def add_friends_in_db(user_id: int, current_user: int, db: AsyncSession):
+    db_friends = Friends(
+        user_id=user_id,
+        user=current_user
+    )
+
+    db.append(db.friends)
+    await db.commit()
+    await db.refresh(db.friends)
+    return db_friends
+
+
+async def get_friends(db: AsyncSession, skip: int = 0, limit: int = 100):
+    query = select(Friends)
+    result = await db.execute(query)
+    return result.scalars().all()

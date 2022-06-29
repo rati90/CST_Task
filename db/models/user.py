@@ -25,7 +25,8 @@ class User(Timestamp, Base):
     is_active = Column(Boolean, default=True, server_default="true")
 
     profile = relationship("Profile", back_populates="owner", uselist=False)
-    friends = relationship("Friends", back_populates='owner', uselist=True)
+
+    friends = relationship("Friends", secondary='user_friends', backref='followers')
 
 
 class Profile(Timestamp, Base):
@@ -43,9 +44,10 @@ class Profile(Timestamp, Base):
 class Friends(Base):
     __tablename__ = "friends"
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
 
-    friends_id = Column(Integer, ForeignKey("users.id"))
-    owner = relationship("User", back_populates="friends")
+    user = relationship("User", back_populates="friends")
+
 
 
 

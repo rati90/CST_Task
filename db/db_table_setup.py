@@ -13,6 +13,7 @@ async def init_models():
         await conn.run_sync(post.Base.metadata.create_all)
 
 
+
 cli = typer.Typer()
 
 

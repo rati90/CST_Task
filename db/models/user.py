@@ -26,7 +26,7 @@ class User(Timestamp, Base):
 
     profile = relationship("Profile", back_populates="owner", uselist=False)
 
-    friends = relationship("Friends", secondary='user_friends', backref='followers')
+    friends = relationship("Friends", back_populates='user')
 
 
 class Profile(Timestamp, Base):
@@ -45,6 +45,7 @@ class Friends(Base):
     __tablename__ = "friends"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
+    friend_id = Column(Integer, nullable=False)
 
     user = relationship("User", back_populates="friends")
 

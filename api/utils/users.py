@@ -113,19 +113,35 @@ async def user_is_admin(current_user: User):
         )
 
 
-async def add_friends_in_db(user_id: int, current_user: int, db: AsyncSession):
+async def add_friends_in_db(friend_id: int, current_user: int, db: AsyncSession):
     db_friends = Friends(
-        user_id=user_id,
-        user=current_user
+        user_id=current_user,
+        friend_id=friend_id,
     )
 
-    db.append(db.friends)
+    db_vs_friends = Friends(
+        user_id=friend_id,
+        friend_id=current_user
+    )
+
+    db.add(db_friends)
     await db.commit()
-    await db.refresh(db.friends)
+    await db.refresh(db_friends)
+
+    db.add(db_vs_friends)
+    await db.commit()
+    await db.refresh(db_vs_friends)
+
     return db_friends
 
 
-async def get_friends(db: AsyncSession, skip: int = 0, limit: int = 100):
-    query = select(Friends)
+async def get_friends_current(db: AsyncSession, user_id: int, skip: int = 0, limit: int = 100):
+    query = select(Friends).where(Friends.user_id == user_id)
     result = await db.execute(query)
     return result.scalars().all()
+
+
+async def check_friendship(db: AsyncSession, current_user: int, friend_id: int):
+    query = select(Friends).where(Friends.user_id == current_user).where(Friends.friend_id == friend_id)
+    result = await db.execute(query)
+    return result.scalar_one_or_none()

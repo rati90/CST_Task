@@ -14,7 +14,7 @@ from api.utils.users import (
     get_profile,
     create_profile,
     get_update_profile,
-    user_is_admin, get_update_user, get_friends, add_friends_in_db,
+    user_is_admin, get_update_user, get_friends_current, add_friends_in_db, check_friendship
 )
 from api.utils.posts import get_user_posts
 
@@ -100,29 +100,32 @@ async def update_profile(
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
-@router.post("/add_friend")
-async def add_friend(user_id: int,
-                     db: AsyncSession = Depends(get_db),
-                     current_user: User = Depends(get_current_active_user)):
-
-    await add_friends_in_db(user_id=user_id, current_user=current_user.id, db=db)
-
-#
-# current_friends = await get_friends(db=db, user_id=current_user.id)
-# if user_id not in current_friends:
-#     await
-
-@router.post("/friends")
+@router.get("/friends")
 async def show_friends_current_user(db: AsyncSession = Depends(get_db),
                                     current_user: User = Depends(get_current_active_user)
                                     ):
-    all_friends = await get_friends(db=db)
-    # db_friends = await get_friends(db=db, user_id=current_user.id)
-    # if db_friends:
-    #     return db_friends
-    # else:
-    #     raise HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="You do not have any Friends")
-    # 
+    all_friends = await get_friends_current(db=db, user_id=current_user.id)
+    if all_friends:
+        return all_friends
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+
+@router.post("/add_friend")
+async def add_friend(friend_id: int,
+                     db: AsyncSession = Depends(get_db),
+                     current_user: User = Depends(get_current_active_user)):
+
+    check_friend_status = await check_friendship(db=db, current_user=current_user.id, friend_id=friend_id)
+    if check_friend_status:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Already a friend")
+    else:
+        added_friend = await add_friends_in_db(friend_id=friend_id, current_user=current_user.id, db=db)
+
+        return added_friend
+
+
+
 
 
 

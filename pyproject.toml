@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "learningmanagementsystem(lms)"
+name = "socialmedia"
 version = "0.1.0"
 description = ""
 authors = ["ratibakhtadze <ratibakhtadze@gmail.com>"]

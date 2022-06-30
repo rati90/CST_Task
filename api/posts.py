@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Dict, List
 
 from api.services.auhontication import get_current_active_user
 from api.utils.users import check_friendship
@@ -33,7 +34,7 @@ async def create_new_post(
     return db_post
 
 
-@router.get("/all", response_model=list[Post])
+@router.get("/all", response_model=List[Post])
 async def read_posts(db: AsyncSession = Depends(get_db)):
     posts = await get_posts(db=db)
     if posts is None:
@@ -67,7 +68,7 @@ async def read_post(post_id: int, db: AsyncSession = Depends(get_db)):
 @router.patch("/{post_id}")
 async def update_post(
         post_id: int,
-        update_text: dict[str, str],
+        update_text: Dict[str, str],
         db: AsyncSession = Depends(get_db),
         current_user: User = Depends(get_current_active_user)
 ):

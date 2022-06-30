@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete, update
+from typing import Dict
 
 from db.models.post import Post, Comments
 from pydantic_schemas.posts import PostCreate
@@ -32,7 +33,7 @@ async def get_delete_post(db: AsyncSession, post_id: int):
 
 
 async def get_update_post(
-    db: AsyncSession, post_id: int, update_text: dict[str, str]
+    db: AsyncSession, post_id: int, update_text: Dict[str, str]
 ):
     query = update(Post).where(Post.id == post_id).values(update_text)
     await db.execute(query)

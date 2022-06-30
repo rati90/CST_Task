@@ -6,6 +6,7 @@ from api.services import auhontication
 from db.models.user import User, Profile, Friends
 from pydantic_schemas.profile import ProfileCreate
 from pydantic_schemas.user import UserInDB
+from typing import Dict
 
 
 async def get_user(db: AsyncSession, user_id: int):
@@ -67,7 +68,7 @@ async def create_user(db: AsyncSession, user: UserInDB):
 
 
 async def get_update_user(
-        db: AsyncSession, user_id: int, update_info: dict[str, str]
+        db: AsyncSession, user_id: int, update_info: Dict[str, str]
 ):
     query = (
         update(User).where(User.id == user_id).values(update_info)
@@ -77,7 +78,7 @@ async def get_update_user(
 
 
 async def get_update_profile(
-        db: AsyncSession, user_id: int, update_info: dict[str, str]
+        db: AsyncSession, user_id: int, update_info: Dict[str, str]
 ):
     query = (
         update(Profile).where(Profile.user_id == user_id).values(update_info)

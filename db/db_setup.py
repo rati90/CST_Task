@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 SQLALCHEMY_DATABASE_URL = (
-    'sqlite+aiosqlite:///database.db'
+    'sqlite+aiosqlite:///data/database.db'
 )
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL) # echo=True

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List, Dict
 
 from api.services.auhontication import get_current_active_user
 from db.db_setup import get_db
@@ -39,7 +40,7 @@ async def create_new_user(user: UserInDB, db: AsyncSession = Depends(get_db)):
     return await create_user(db=db, user=user)
 
 
-@router.get("/all", response_model=list[User])
+@router.get("/all", response_model=List[User])
 async def read_users(
         db: AsyncSession = Depends(get_db),
         skip: int = 0,
@@ -83,7 +84,7 @@ async def read_user_profile(
 
 @router.patch("/profile")
 async def update_profile(
-        update_info: dict[str, str],
+        update_info: Dict[str, str],
         db: AsyncSession = Depends(
             get_db,
         ),
@@ -131,7 +132,7 @@ async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
     return db_user
 
 
-@router.get("/{user_id}/posts", response_model=list[Post])
+@router.get("/{user_id}/posts", response_model=List[Post])
 async def read_user_posts(user_id: int, db: AsyncSession = Depends(get_db)):
     posts = await get_user_posts(user_id=user_id, db=db)
     if posts is None:
@@ -142,7 +143,7 @@ async def read_user_posts(user_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.patch("/{user_id}/update")
 async def update_user(user_id: int,
-                      update_info: dict[str, str],
+                      update_info: Dict[str, str],
                       db: AsyncSession = Depends(get_db),
                       current_user: User = Depends(get_current_active_user)
                       ):

@@ -41,11 +41,11 @@ async def create_new_user(user: UserInDB, db: AsyncSession = Depends(get_db)):
 
 @router.get("/all", response_model=list[User])
 async def read_users(
-    db: AsyncSession = Depends(get_db),
-    skip: int = 0,
-    limit: int = 100,
+        db: AsyncSession = Depends(get_db),
+        skip: int = 0,
+        limit: int = 100,
 ):
-    users =  await get_users(db=db, skip=skip, limit=limit)
+    users = await get_users(db=db, skip=skip, limit=limit)
     if users:
         return users
     else:
@@ -54,9 +54,9 @@ async def read_users(
 
 @router.post("/profile/create", response_model=Profile)
 async def create_new_profile(
-    profile: ProfileCreate,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+        profile: ProfileCreate,
+        db: AsyncSession = Depends(get_db),
+        current_user: User = Depends(get_current_active_user),
 ):
     db_profile = await get_profile(db=db, user_id=current_user.id)
     if db_profile:
@@ -70,11 +70,10 @@ async def create_new_profile(
     )
 
 
-
 @router.get("/profile")
 async def read_user_profile(
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+        db: AsyncSession = Depends(get_db),
+        current_user: User = Depends(get_current_active_user),
 ):
     db_profile = await get_profile(db=db, user_id=current_user.id)
     if db_profile is None:
@@ -84,13 +83,12 @@ async def read_user_profile(
 
 @router.patch("/profile")
 async def update_profile(
-    update_info: dict[str, str],
-    db: AsyncSession = Depends(
-        get_db,
-    ),
-    current_user: User = Depends(get_current_active_user),
+        update_info: dict[str, str],
+        db: AsyncSession = Depends(
+            get_db,
+        ),
+        current_user: User = Depends(get_current_active_user),
 ):
-
     db_profile = await get_profile(db=db, user_id=current_user.id)
     if db_profile:
         return await get_update_profile(
@@ -115,7 +113,6 @@ async def show_friends_current_user(db: AsyncSession = Depends(get_db),
 async def add_friend(friend_id: int,
                      db: AsyncSession = Depends(get_db),
                      current_user: User = Depends(get_current_active_user)):
-
     check_friend_status = await check_friendship(db=db, current_user=current_user.id, friend_id=friend_id)
     if check_friend_status:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Already a friend")
@@ -123,10 +120,6 @@ async def add_friend(friend_id: int,
         added_friend = await add_friends_in_db(friend_id=friend_id, current_user=current_user.id, db=db)
 
         return added_friend
-
-
-
-
 
 
 @router.get("/{user_id}")
@@ -153,10 +146,7 @@ async def update_user(user_id: int,
                       db: AsyncSession = Depends(get_db),
                       current_user: User = Depends(get_current_active_user)
                       ):
-
     if await user_is_admin(current_user):
         await get_update_user(db=db, user_id=user_id, update_info=update_info)
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-

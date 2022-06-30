@@ -4,10 +4,10 @@ from sqlalchemy.orm import sessionmaker
 
 
 SQLALCHEMY_DATABASE_URL = (
-    'sqlite+aiosqlite:///database3.db'
+    'sqlite+aiosqlite:///database.db'
 )
 
-engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=True) # echo=True
+engine = create_async_engine(SQLALCHEMY_DATABASE_URL) # echo=True
 
 async_session = sessionmaker(
     engine,
